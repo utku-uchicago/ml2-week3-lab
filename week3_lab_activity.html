@@ -1,12 +1,593 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Week 3 Lab Activity</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ML-II Week 3 — Lab Activity | UChicago MSADS</title>
+<style>
+:root {
+  --maroon: #800000;
+  --maroon-dark: #5f0012;
+  --navy: #1d2d50;
+  --cream: #f7f1eb;
+  --ink: #1a1a1a;
+  --muted: #6b5f57;
+  --line: #e4d7cc;
+  --good: #e7f6ec;
+  --warn: #fff8e1;
+  --bad: #fde8e8;
+  --blue-soft: #eff6ff;
+  --shadow: 0 8px 24px rgba(40,20,20,.10);
+  --radius: 14px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: Georgia, "Times New Roman", serif;
+  background: linear-gradient(180deg, #f5efe9 0%, #fbf8f5 100%);
+  color: var(--ink);
+  line-height: 1.65;
+}
+.wrap { max-width: 1160px; margin: 0 auto; padding: 28px 20px 64px; }
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, var(--maroon-dark), var(--maroon));
+  color: white;
+  border-radius: 22px;
+  padding: 28px 32px 32px;
+  box-shadow: 0 16px 40px rgba(62,0,10,.22);
+  margin-bottom: 28px;
+}
+.hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid rgba(255,255,255,.18); padding-bottom: 18px; margin-bottom: 18px; }
+.institution { font-size: 1.5rem; font-weight: 700; margin-bottom: 3px; }
+.program { font-family: Arial, sans-serif; font-size: .9rem; letter-spacing: .06em; text-transform: uppercase; opacity: .85; }
+.badge { font-family: Arial, sans-serif; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; padding: 8px 14px; background: rgba(255,255,255,.1); font-weight: 700; white-space: nowrap; align-self: flex-start; }
+.hero h1 { font-size: clamp(1.7rem, 3.8vw, 2.8rem); line-height: 1.1; font-weight: 700; margin-bottom: 10px; }
+.hero p { font-family: Arial, sans-serif; font-size: 1.02rem; color: #f6e9e1; max-width: 820px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.chip { font-family: Arial, sans-serif; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.16); border-radius: 999px; padding: 6px 13px; font-size: .88rem; }
+
+/* Section headers */
+.part-header {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--maroon); color: white;
+  border-radius: var(--radius); padding: 14px 22px;
+  margin: 32px 0 18px; box-shadow: var(--shadow);
+}
+.part-header .num { font-size: 1.5rem; font-weight: 800; background: rgba(255,255,255,.2); border-radius: 8px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.part-header h2 { font-size: 1.25rem; font-weight: 700; }
+.part-header p { font-family: Arial, sans-serif; font-size: .9rem; opacity: .85; margin-top: 2px; }
+
+/* Logistics card */
+.logistics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 22px; }
+.logistics-item { background: white; border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); border-top: 4px solid var(--maroon); }
+.logistics-item .lbl { font-family: Arial, sans-serif; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 4px; }
+.logistics-item .val { font-size: 1.05rem; font-weight: 700; color: var(--maroon); }
+.logistics-item .sub { font-family: Arial, sans-serif; font-size: .85rem; color: var(--muted); margin-top: 2px; }
+
+/* Flow timeline */
+.flow { display: flex; flex-direction: column; gap: 0; margin-bottom: 22px; }
+.flow-step { display: flex; gap: 16px; padding: 12px 0; position: relative; }
+.flow-step:not(:last-child)::before { content: ''; position: absolute; left: 18px; top: 40px; bottom: -12px; width: 2px; background: var(--line); }
+.flow-dot { width: 36px; height: 36px; border-radius: 50%; background: var(--maroon); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .9rem; flex-shrink: 0; }
+.flow-content .time { font-family: Arial, sans-serif; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--maroon); }
+.flow-content .desc { font-size: .95rem; color: var(--ink); margin-top: 1px; }
+
+/* Team grid */
+.team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-top: 18px; }
+.team-card {
+  background: white; border-radius: var(--radius); padding: 20px 22px;
+  box-shadow: var(--shadow); border-left: 5px solid var(--maroon);
+  position: relative;
+}
+.team-card.opt  { border-left-color: #1d4ed8; }
+.team-card.reg  { border-left-color: #059669; }
+.team-card.es   { border-left-color: #d97706; }
+.team-card.log  { border-left-color: #7c3aed; }
+
+.team-tag { display: inline-block; font-family: Arial, sans-serif; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; border-radius: 999px; padding: 3px 10px; margin-bottom: 8px; }
+.team-card.opt  .team-tag { background: #dbeafe; color: #1e40af; }
+.team-card.reg  .team-tag { background: #d1fae5; color: #065f46; }
+.team-card.es   .team-tag { background: #fef3c7; color: #92400e; }
+.team-card.log  .team-tag { background: #ede9fe; color: #5b21b6; }
+
+.team-card h3 { font-size: 1.02rem; font-weight: 700; margin-bottom: 10px; line-height: 1.3; }
+.team-card p { font-family: Arial, sans-serif; font-size: .9rem; color: #374151; margin-bottom: 6px; }
+.team-card .label { font-weight: 700; color: var(--ink); }
+.team-card code { background: #f1f5f9; border-radius: 4px; padding: 1px 5px; font-size: .85em; font-family: 'SF Mono', 'Fira Code', monospace; }
+.team-card .expected { background: var(--good); border-radius: 8px; padding: 8px 12px; font-size: .85rem; font-family: Arial, sans-serif; margin-top: 10px; color: #065f46; }
+
+/* Code block */
+.code-section { margin: 22px 0; }
+.code-section .code-label { font-family: Arial, sans-serif; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #059669; margin-bottom: 6px; }
+pre {
+  background: #1e293b; color: #e2e8f0;
+  padding: 20px 22px; border-radius: 12px;
+  overflow-x: auto; font-size: .84rem;
+  font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  line-height: 1.65;
+}
+.kw { color: #7dd3fc; } .fn { color: #86efac; } .cm { color: #64748b; }
+.st { color: #fca5a5; } .nm { color: #fcd34d; }
+
+/* Info cards */
+.info-box { border-radius: var(--radius); padding: 16px 20px; margin: 16px 0; font-family: Arial, sans-serif; font-size: .92rem; }
+.info-box.blue  { background: var(--blue-soft); border-left: 4px solid #3b82f6; }
+.info-box.green { background: var(--good);      border-left: 4px solid #059669; }
+.info-box.amber { background: var(--warn);      border-left: 4px solid #d97706; }
+.info-box.red   { background: var(--bad);       border-left: 4px solid #ef4444; }
+.info-box strong { color: var(--ink); }
+
+/* Presentation template */
+.pres-template { background: white; border: 2px dashed var(--line); border-radius: var(--radius); padding: 20px 24px; margin-top: 18px; }
+.pres-template h4 { font-size: .95rem; font-weight: 700; color: var(--maroon); margin-bottom: 12px; font-family: Arial, sans-serif; }
+.pres-row { display: flex; gap: 10px; margin-bottom: 8px; font-family: Arial, sans-serif; font-size: .9rem; }
+.pres-num { background: var(--maroon); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .78rem; font-weight: 700; flex-shrink: 0; }
+.pres-text { color: #374151; }
+
+/* Instructor wrap-up */
+.wrapup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 14px; }
+.wrapup-item { background: white; border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); }
+.wrapup-item .wi-label { font-family: Arial, sans-serif; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 6px; }
+.wrapup-item ul { font-family: Arial, sans-serif; font-size: .88rem; padding-left: 16px; color: #374151; }
+.wrapup-item li { margin-bottom: 3px; }
+
+hr { border: none; border-top: 2px solid var(--line); margin: 30px 0; }
+</style>
 </head>
 <body>
-    <h1>Week 3 Lab Activity</h1>
-    <p>This is the content for the Week 3 lab activity.</p>
+<div class="wrap">
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-top">
+    <div>
+      <div class="institution">The University of Chicago</div>
+      <div class="program">MSADS · Machine Learning II · Week 3</div>
+    </div>
+    <div class="badge">Team Lab Activity</div>
+  </div>
+  <h1>Optimization, Regularization &amp; Early Stopping Lab</h1>
+  <p>A hands-on team experiment across all of Week 3's core ideas — from loss surfaces and optimizer choice to Ridge, Lasso, and when to stop training.</p>
+  <div class="chips">
+    <span class="chip">⏱ ~55 minutes</span>
+    <span class="chip">10 teams</span>
+    <span class="chip">Google Colab</span>
+    <span class="chip">Part 1: Optimization</span>
+    <span class="chip">Part 2: Regularization</span>
+    <span class="chip">Part 3: Early Stopping &amp; Logistic</span>
+  </div>
+</div>
+
+<!-- Logistics -->
+<div class="logistics">
+  <div class="logistics-item">
+    <div class="lbl">Format</div>
+    <div class="val">10 teams, 2–3 students</div>
+    <div class="sub">Each team: one focused mission</div>
+  </div>
+  <div class="logistics-item">
+    <div class="lbl">Total time</div>
+    <div class="val">~55 min</div>
+    <div class="sub">Experiment + share-out</div>
+  </div>
+  <div class="logistics-item">
+    <div class="lbl">Deliverable</div>
+    <div class="val">2-min class share</div>
+    <div class="sub">One plot + one key insight</div>
+  </div>
+  <div class="logistics-item">
+    <div class="lbl">Tools</div>
+    <div class="val">Google Colab</div>
+    <div class="sub">numpy, matplotlib, sklearn</div>
+  </div>
+</div>
+
+<!-- Class flow -->
+<div style="background:white;border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);margin-bottom:28px;">
+  <h3 style="font-family:Arial,sans-serif;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:14px;">Class Flow</h3>
+  <div class="flow">
+    <div class="flow-step"><div class="flow-dot">1</div><div class="flow-content"><div class="time">0–5 min</div><div class="desc">Instructor sets context, assigns teams, everyone opens Colab with starter code</div></div></div>
+    <div class="flow-step"><div class="flow-dot">2</div><div class="flow-content"><div class="time">5–30 min</div><div class="desc">Teams run their assigned experiment, observe, tweak parameters, note insights</div></div></div>
+    <div class="flow-step"><div class="flow-dot">3</div><div class="flow-content"><div class="time">30–52 min</div><div class="desc">Each team presents: show your plot, explain the insight in 2 minutes</div></div></div>
+    <div class="flow-step"><div class="flow-dot">4</div><div class="flow-content"><div class="time">52–55 min</div><div class="desc">Instructor wrap-up: tie all insights together into the Week 3 mental model</div></div></div>
+  </div>
+</div>
+
+<!-- Starter Code -->
+<div class="part-header">
+  <div class="num">★</div>
+  <div><h2>Starter Code — Everyone Runs This First</h2><p>Self-contained. Copy into a new Colab cell and run before starting your mission.</p></div>
+</div>
+<div class="code-section">
+  <div class="code-label">▶ Paste into Colab — Cell 1: Setup</div>
+<pre><code><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> Ridge, Lasso, ElasticNet, LogisticRegression
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler, PolynomialFeatures
+<span class="kw">from</span> sklearn.pipeline <span class="kw">import</span> Pipeline
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+<span class="kw">from</span> sklearn.datasets <span class="kw">import</span> make_regression, make_classification
+np.random.seed(<span class="nm">42</span>)
+
+<span class="cm"># ── Dataset A: simple regression (for optimizer experiments) ────────────</span>
+N = <span class="nm">300</span>
+X_1d = <span class="nm">2</span> * np.random.rand(N, <span class="nm">1</span>)
+y_1d = <span class="nm">4</span> + <span class="nm">3</span> * X_1d.ravel() + np.random.randn(N) * <span class="nm">0.8</span>
+X_b  = np.c_[np.ones(N), X_1d]          <span class="cm"># add bias column</span>
+
+<span class="cm"># ── Dataset B: polynomial regression (for regularization experiments) ───</span>
+N2 = <span class="nm">80</span>
+X_poly_raw = np.sort(np.random.rand(N2) * <span class="nm">6</span> - <span class="nm">3</span>)
+y_poly = np.sin(X_poly_raw) + np.random.randn(N2) * <span class="nm">0.3</span>
+X_p, X_p_test = X_poly_raw[:<span class="nm">60</span>].reshape(-<span class="nm">1</span>,<span class="nm">1</span>), X_poly_raw[<span class="nm">60</span>:].reshape(-<span class="nm">1</span>,<span class="nm">1</span>)
+y_p, y_p_test = y_poly[:<span class="nm">60</span>], y_poly[<span class="nm">60</span>:]
+
+<span class="cm"># ── Dataset C: many-feature regression (for Ridge/Lasso/sparsity) ───────</span>
+X_many, y_many = make_regression(n_samples=<span class="nm">200</span>, n_features=<span class="nm">30</span>,
+                                  n_informative=<span class="nm">5</span>, noise=<span class="nm">15</span>, random_state=<span class="nm">0</span>)
+X_many = StandardScaler().fit_transform(X_many)
+X_m_tr, X_m_te, y_m_tr, y_m_te = train_test_split(X_many, y_many,
+                                                    test_size=<span class="nm">0.3</span>, random_state=<span class="nm">0</span>)
+
+<span class="cm"># ── Dataset D: binary classification (for logistic regression) ──────────</span>
+X_clf, y_clf = make_classification(n_samples=<span class="nm">300</span>, n_features=<span class="nm">2</span>, n_redundant=<span class="nm">0</span>,
+                                    n_informative=<span class="nm">2</span>, random_state=<span class="nm">5</span>, n_clusters_per_class=<span class="nm">1</span>)
+X_clf = StandardScaler().fit_transform(X_clf)
+X_c_tr, X_c_te, y_c_tr, y_c_te = train_test_split(X_clf, y_clf, test_size=<span class="nm">0.3</span>, random_state=<span class="nm">0</span>)
+
+<span class="cm"># ── Gradient descent helpers ──────────────────────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">gd</span>(Xb, y, eta=<span class="nm">0.1</span>, n_epochs=<span class="nm">80</span>):
+    theta = np.random.randn(Xb.shape[<span class="nm">1</span>])
+    losses = []
+    <span class="kw">for</span> _ <span class="kw">in</span> range(n_epochs):
+        g = (<span class="nm">2</span>/len(y)) * Xb.T @ (Xb @ theta - y)
+        theta -= eta * g
+        losses.append(np.mean((Xb @ theta - y)**<span class="nm">2</span>))
+    <span class="kw">return</span> theta, np.array(losses)
+
+<span class="kw">def</span> <span class="fn">momentum_gd</span>(Xb, y, eta=<span class="nm">0.1</span>, beta=<span class="nm">0.9</span>, n_epochs=<span class="nm">80</span>):
+    theta = np.random.randn(Xb.shape[<span class="nm">1</span>]); m = np.zeros_like(theta)
+    losses = []
+    <span class="kw">for</span> _ <span class="kw">in</span> range(n_epochs):
+        g = (<span class="nm">2</span>/len(y)) * Xb.T @ (Xb @ theta - y)
+        m = beta * m + (<span class="nm">1</span> - beta) * g      <span class="cm"># EMA of gradients</span>
+        theta -= eta * m
+        losses.append(np.mean((Xb @ theta - y)**<span class="nm">2</span>))
+    <span class="kw">return</span> theta, np.array(losses)
+
+<span class="kw">def</span> <span class="fn">adam_gd</span>(Xb, y, eta=<span class="nm">0.05</span>, b1=<span class="nm">0.9</span>, b2=<span class="nm">0.999</span>, eps=<span class="nm">1e-8</span>, n_epochs=<span class="nm">80</span>):
+    theta = np.random.randn(Xb.shape[<span class="nm">1</span>])
+    m = np.zeros_like(theta); v = np.zeros_like(theta)
+    losses = []
+    <span class="kw">for</span> t <span class="kw">in</span> range(<span class="nm">1</span>, n_epochs + <span class="nm">1</span>):
+        g = (<span class="nm">2</span>/len(y)) * Xb.T @ (Xb @ theta - y)
+        m = b1*m + (<span class="nm">1</span>-b1)*g; v = b2*v + (<span class="nm">1</span>-b2)*g**<span class="nm">2</span>
+        mh = m/(<span class="nm">1</span>-b1**t); vh = v/(<span class="nm">1</span>-b2**t)
+        theta -= eta * mh / (np.sqrt(vh) + eps)
+        losses.append(np.mean((Xb @ theta - y)**<span class="nm">2</span>))
+    <span class="kw">return</span> theta, np.array(losses)
+
+<span class="fn">print</span>(<span class="st">"Setup complete. Datasets A–D ready."</span>)</code></pre>
+</div>
+
+<div class="info-box blue">
+  <strong>Before your team mission:</strong> Run the setup cell above. All your experiment code builds on these datasets and helper functions. The helper functions are intentionally simple — you can modify them freely.
+</div>
+
+<hr>
+
+<!-- PART 1: Optimization Teams -->
+<div class="part-header" style="background:linear-gradient(135deg,#1d2d50,#1e40af);">
+  <div class="num">1</div>
+  <div><h2>Part 1 — Optimization Teams (Teams 1–4)</h2><p>Loss surfaces, learning rates, momentum, and Adam — using Dataset A.</p></div>
+</div>
+
+<div class="team-grid">
+
+  <!-- Team 1 -->
+  <div class="team-card opt">
+    <div class="team-tag">Learning Rate</div>
+    <h3>Team 1 — The Learning Rate Disaster Tour</h3>
+    <p><span class="label">Mission:</span> Run GD with 4 different learning rates and plot all 4 loss curves on one figure.</p>
+    <p><span class="label">Code hint:</span> Call <code>gd(X_b, y_1d, eta=???)</code> four times.</p>
+    <p><span class="label">Try:</span> <code>eta = 0.001, 0.05, 0.2, 0.6</code></p>
+    <p><span class="label">Observe:</span> Which converges fastest? Which diverges or oscillates? Which barely moves?</p>
+    <p><span class="label">Explain:</span> What does the loss curve shape tell you about whether eta is too big, too small, or just right?</p>
+    <div class="expected">Expected insight: Small eta → slow but stable. Large eta → oscillation or divergence (loss goes up). There's a "Goldilocks zone" — and finding it is half the job of hyperparameter tuning.</div>
+  </div>
+
+  <!-- Team 2 -->
+  <div class="team-card opt">
+    <div class="team-tag">Loss Surface</div>
+    <h3>Team 2 — Scaled vs Unscaled Surface</h3>
+    <p><span class="label">Mission:</span> Create a 2-feature synthetic dataset where one feature is 1000× larger, then show GD paths on both the unscaled and scaled loss surface.</p>
+    <p><span class="label">Code hint:</span></p>
+    <pre style="font-size:.78rem;padding:10px 12px;margin:6px 0;border-radius:8px;"><code>x1 = np.random.rand(200) * 1000   # large scale
+x2 = np.random.rand(200)           # normal scale
+y2 = 2*x1 + 50*x2 + np.random.randn(200)*5
+X2_raw    = np.c_[x1, x2]
+X2_scaled = StandardScaler().fit_transform(X2_raw)
+# Run GD path on f(a,b) = a² + 1000²b² vs a² + b²</code></pre>
+    <p><span class="label">Observe:</span> How many epochs does GD need on the unscaled vs scaled surface to reach similar loss?</p>
+    <div class="expected">Expected insight: Unscaled features create an elongated loss surface — GD oscillates sideways and converges slowly. Scaling makes the surface circular — GD goes straight to the minimum.</div>
+  </div>
+
+  <!-- Team 3 -->
+  <div class="team-card opt">
+    <div class="team-tag">Momentum</div>
+    <h3>Team 3 — Momentum vs Plain GD</h3>
+    <p><span class="label">Mission:</span> On Dataset A, compare plain GD vs Momentum at the same learning rate. Plot loss curves side by side.</p>
+    <p><span class="label">Code hint:</span> Call both <code>gd()</code> and <code>momentum_gd()</code> with <code>eta=0.05</code>. Add gradient noise to GD to see the smoothing effect:</p>
+    <pre style="font-size:.78rem;padding:10px 12px;margin:6px 0;border-radius:8px;"><code>np.random.seed(7)
+# Add noise to gradient inside gd() to simulate mini-batch variance
+# noise = np.random.randn(2) * 0.5  (add to grad before update)</code></pre>
+    <p><span class="label">Observe:</span> Is Momentum's loss curve smoother? Does it converge faster?</p>
+    <p><span class="label">Try:</span> <code>beta=0.5</code> vs <code>beta=0.9</code> vs <code>beta=0.99</code></p>
+    <div class="expected">Expected insight: Momentum's EMA filter smooths out noisy gradient updates. β=0.9 is the sweet spot — β=0.99 can overshoot and slow convergence.</div>
+  </div>
+
+  <!-- Team 4 -->
+  <div class="team-card opt">
+    <div class="team-tag">Adam</div>
+    <h3>Team 4 — GD vs Momentum vs Adam Race</h3>
+    <p><span class="label">Mission:</span> Run all three optimizers on Dataset A and plot their loss curves together. Then try different learning rates for each to find their "best" eta.</p>
+    <p><span class="label">Code hint:</span> Call <code>gd()</code>, <code>momentum_gd()</code>, and <code>adam_gd()</code>. Use <code>n_epochs=100</code>.</p>
+    <p><span class="label">Try:</span> SGD at <code>eta=0.1</code>, Momentum at <code>eta=0.05</code>, Adam at <code>eta=0.05</code></p>
+    <p><span class="label">Observe:</span> Which reaches a low loss fastest? How does each react to a 2× larger learning rate?</p>
+    <div class="expected">Expected insight: Adam typically converges faster and is more robust to learning rate choice. Its advantage grows on complex (non-convex) problems. On simple linear regression they all converge to the same minimum eventually.</div>
+  </div>
+
+</div>
+
+<hr>
+
+<!-- PART 2: Regularization Teams -->
+<div class="part-header" style="background:linear-gradient(135deg,#064e3b,#059669);">
+  <div class="num">2</div>
+  <div><h2>Part 2 — Regularization Teams (Teams 5–7)</h2><p>Overfitting, Ridge, Lasso, Elastic Net — using Dataset B (polynomial) and Dataset C (sparse).</p></div>
+</div>
+
+<div class="team-grid">
+
+  <!-- Team 5 -->
+  <div class="team-card reg">
+    <div class="team-tag">Ridge</div>
+    <h3>Team 5 — Overfitting vs Ridge</h3>
+    <p><span class="label">Mission:</span> Fit degree-12 polynomial regression on Dataset B with and without Ridge regularization. Show how regularization prevents overfitting.</p>
+    <p><span class="label">Code hint:</span></p>
+    <pre style="font-size:.78rem;padding:10px 12px;margin:6px 0;border-radius:8px;"><code>from sklearn.linear_model import Ridge
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.pipeline import Pipeline
+
+X_plot = np.linspace(-3, 3, 300).reshape(-1,1)
+for alpha, color, label in [(0, 'tomato', 'No reg (overfit)'),
+                              (0.1, 'orange', 'Ridge α=0.1'),
+                              (10, 'steelblue', 'Ridge α=10')]:
+    model = Pipeline([('poly', PolynomialFeatures(12)),
+                      ('scl', StandardScaler()),
+                      ('reg', Ridge(alpha=alpha))])
+    model.fit(X_p, y_p)
+    plt.plot(X_plot, model.predict(X_plot), color=color, label=label)
+plt.scatter(X_p, y_p, s=18, alpha=0.6, color='gray')
+plt.ylim(-2, 2); plt.legend(); plt.title('Ridge Regularization')
+plt.show()</code></pre>
+    <p><span class="label">Observe:</span> How does increasing α change the smoothness of the fit? What does α=0 look like?</p>
+    <div class="expected">Expected insight: α=0 wildly overfits the training data. Higher α forces the model toward simpler, smoother predictions. The sweet spot generalizes to new data.</div>
+  </div>
+
+  <!-- Team 6 -->
+  <div class="team-card reg">
+    <div class="team-tag">Lasso</div>
+    <h3>Team 6 — Lasso's Sparsity Superpower</h3>
+    <p><span class="label">Mission:</span> Using Dataset C (30 features, only 5 informative), compare Ridge and Lasso coefficient patterns. Show that Lasso zeros out irrelevant features.</p>
+    <p><span class="label">Code hint:</span></p>
+    <pre style="font-size:.78rem;padding:10px 12px;margin:6px 0;border-radius:8px;"><code>ridge = Ridge(alpha=1.0).fit(X_m_tr, y_m_tr)
+lasso = Lasso(alpha=0.5).fit(X_m_tr, y_m_tr)
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+for ax, model, name in [(axes[0], ridge, 'Ridge'), (axes[1], lasso, 'Lasso')]:
+    ax.bar(range(30), model.coef_, color='steelblue', alpha=0.7)
+    ax.axhline(0, color='black', lw=0.8)
+    n_zero = np.sum(np.abs(model.coef_) < 0.01)
+    ax.set_title(f'{name} — {n_zero}/30 coefficients ≈ 0')
+    ax.set_xlabel('Feature index')
+plt.tight_layout(); plt.show()</code></pre>
+    <p><span class="label">Observe:</span> How many features does Lasso zero out? Does Ridge zero anything?</p>
+    <p><span class="label">Try:</span> Increase Lasso α from 0.1 → 1.0 → 5.0. What happens?</p>
+    <div class="expected">Expected insight: Ridge shrinks all coefficients but keeps all non-zero. Lasso performs automatic feature selection — zeroing out irrelevant features entirely. At very high α, Lasso zeros everything (underfitting).</div>
+  </div>
+
+  <!-- Team 7 -->
+  <div class="team-card reg">
+    <div class="team-tag">Elastic Net</div>
+    <h3>Team 7 — Elastic Net: Best of Both Worlds</h3>
+    <p><span class="label">Mission:</span> On Dataset C, compare Ridge (l1_ratio=0), Elastic Net (l1_ratio=0.5), and Lasso (l1_ratio=1) coefficient patterns and test MSE.</p>
+    <p><span class="label">Code hint:</span></p>
+    <pre style="font-size:.78rem;padding:10px 12px;margin:6px 0;border-radius:8px;"><code>from sklearn.linear_model import ElasticNet
+
+fig, axes = plt.subplots(1, 3, figsize=(14, 4))
+for ax, l1, name in [(axes[0], 0.0, 'Ridge (l1=0)'),
+                      (axes[1], 0.5, 'Elastic Net (l1=0.5)'),
+                      (axes[2], 1.0, 'Lasso (l1=1)')]:
+    en = ElasticNet(alpha=0.5, l1_ratio=l1, max_iter=5000).fit(X_m_tr, y_m_tr)
+    test_mse = np.mean((en.predict(X_m_te) - y_m_te)**2)
+    n_zero = np.sum(np.abs(en.coef_) < 0.01)
+    ax.bar(range(30), en.coef_, color='steelblue', alpha=0.7)
+    ax.axhline(0, color='black', lw=0.8)
+    ax.set_title(f'{name}\nMSE={test_mse:.1f}  zeros={n_zero}/30')
+plt.tight_layout(); plt.show()</code></pre>
+    <p><span class="label">Observe:</span> Which achieves the best test MSE? Does the l1_ratio control the sparsity?</p>
+    <div class="expected">Expected insight: Elastic Net captures correlated features better than pure Lasso (which arbitrarily picks one from a group). It offers sparsity like Lasso AND stability like Ridge. l1_ratio is the dial between the two behaviors.</div>
+  </div>
+
+</div>
+
+<hr>
+
+<!-- PART 3: Early Stopping & Logistic -->
+<div class="part-header" style="background:linear-gradient(135deg,#78350f,#d97706);">
+  <div class="num">3</div>
+  <div><h2>Part 3 — Early Stopping &amp; Classification (Teams 8–10)</h2><p>When to stop training, and moving from regression to probability estimation.</p></div>
+</div>
+
+<div class="team-grid">
+
+  <!-- Team 8 -->
+  <div class="team-card es">
+    <div class="team-tag">Early Stopping</div>
+    <h3>Team 8 — Catching the Overfitting Moment</h3>
+    <p><span class="label">Mission:</span> Train a high-degree polynomial model incrementally and plot both training and validation loss. Find the epoch where validation loss starts rising.</p>
+    <p><span class="label">Code hint:</span></p>
+    <pre style="font-size:.78rem;padding:10px 12px;margin:6px 0;border-radius:8px;"><code>from sklearn.linear_model import SGDRegressor
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+from sklearn.pipeline import Pipeline
+
+poly_pipe = Pipeline([('poly', PolynomialFeatures(8)), ('scl', StandardScaler())])
+X_tr_f = poly_pipe.fit_transform(X_p)
+X_te_f = poly_pipe.transform(X_p_test)
+
+sgd = SGDRegressor(max_iter=1, warm_start=True, learning_rate='constant',
+                   eta0=0.0005, random_state=42)
+train_l, val_l, best = [], [], (np.inf, 0)
+for epoch in range(300):
+    sgd.fit(X_tr_f, y_p)
+    tr  = np.mean((sgd.predict(X_tr_f)  - y_p)**2)
+    val = np.mean((sgd.predict(X_te_f) - y_p_test)**2)
+    train_l.append(tr); val_l.append(val)
+    if val < best[0]: best = (val, epoch)
+
+plt.figure(figsize=(10, 4))
+plt.plot(train_l, label='Train', color='steelblue', lw=2)
+plt.plot(val_l,   label='Validation', color='tomato', lw=2)
+plt.axvline(best[1], color='green', ls='--', lw=1.5, label=f'Best epoch={best[1]}')
+plt.yscale('log'); plt.xlabel('Epoch'); plt.ylabel('MSE (log)')
+plt.title('Early Stopping: Find the Overfitting Point')
+plt.legend(); plt.tight_layout(); plt.show()
+print(f'Best validation epoch: {best[1]}, val MSE: {best[0]:.4f}')</code></pre>
+    <p><span class="label">Observe:</span> At what epoch do train and val loss diverge? What does that gap mean?</p>
+    <div class="expected">Expected insight: The gap between train and val loss is the generalization gap. The best model is saved at the minimum of the val curve — training past this point memorizes training noise and hurts generalization.</div>
+  </div>
+
+  <!-- Team 9 -->
+  <div class="team-card log">
+    <div class="team-tag">Logistic Regression</div>
+    <h3>Team 9 — Decision Boundary &amp; Regularization C</h3>
+    <p><span class="label">Mission:</span> Using Dataset D, train logistic regression with 3 different C values and visualize how the decision boundary changes.</p>
+    <p><span class="label">Code hint:</span></p>
+    <pre style="font-size:.78rem;padding:10px 12px;margin:6px 0;border-radius:8px;"><code>xx, yy = np.meshgrid(np.linspace(-3,3,200), np.linspace(-3,3,200))
+grid = np.c_[xx.ravel(), yy.ravel()]
+
+fig, axes = plt.subplots(1, 3, figsize=(14, 4))
+for ax, C, color in [(axes[0], 0.01, 'Strong reg'),
+                      (axes[1], 1.0,  'Default'),
+                      (axes[2], 100,  'Weak reg')]:
+    clf = LogisticRegression(C=C, random_state=0).fit(X_c_tr, y_c_tr)
+    Z = clf.predict(grid).reshape(xx.shape)
+    acc = clf.score(X_c_te, y_c_te)
+    ax.contourf(xx, yy, Z, alpha=0.25, cmap='RdYlBu')
+    ax.scatter(X_c_te[:,0], X_c_te[:,1], c=y_c_te, cmap='RdYlBu', s=20, edgecolors='k', lw=0.5)
+    ax.set_title(f'C={C}  |  Test Acc={acc:.2f}')
+plt.tight_layout(); plt.show()</code></pre>
+    <p><span class="label">Observe:</span> Small C = strong regularization. Does the boundary become more linear? Does test accuracy change?</p>
+    <div class="expected">Expected insight: C=1/λ in logistic regression — small C means high regularization → simpler (more linear) boundary. Very small C underfits. Very large C overfits to training points. Sweet spot generalizes best.</div>
+  </div>
+
+  <!-- Team 10 -->
+  <div class="team-card log">
+    <div class="team-tag">Probability</div>
+    <h3>Team 10 — Reading the Sigmoid Output</h3>
+    <p><span class="label">Mission:</span> Train logistic regression on Dataset D, then explore the predicted probabilities. Show the sigmoid curve and a calibration plot.</p>
+    <p><span class="label">Code hint:</span></p>
+    <pre style="font-size:.78rem;padding:10px 12px;margin:6px 0;border-radius:8px;"><code>clf = LogisticRegression(C=1.0, random_state=0).fit(X_c_tr, y_c_tr)
+probs = clf.predict_proba(X_c_te)[:, 1]    # P(class=1)
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+
+# Sigmoid shape
+z = np.linspace(-5, 5, 200)
+axes[0].plot(z, 1/(1+np.exp(-z)), color='steelblue', lw=2.5)
+axes[0].axhline(0.5, color='gray', ls='--', lw=1)
+axes[0].set_title('Sigmoid: score → probability')
+axes[0].set_xlabel('Linear score (w·x + b)'); axes[0].set_ylabel('P(y=1)')
+
+# Predicted probability histogram
+axes[1].hist(probs[y_c_te==0], bins=20, alpha=0.6, color='tomato',    label='True class 0')
+axes[1].hist(probs[y_c_te==1], bins=20, alpha=0.6, color='steelblue', label='True class 1')
+axes[1].axvline(0.5, color='black', ls='--', lw=1.5, label='Decision threshold 0.5')
+axes[1].set_title('Predicted P(y=1) by True Class')
+axes[1].set_xlabel('Predicted probability'); axes[1].legend()
+
+plt.tight_layout(); plt.show()
+print(f'Confident wrong (prob>0.9, wrong class): {np.sum((probs>0.9) & (y_c_te==0))}')</code></pre>
+    <p><span class="label">Observe:</span> Are the two histograms well-separated? How many examples is the model confidently wrong about?</p>
+    <div class="expected">Expected insight: Well-separated histograms = the model is confident and correct. Overlap near 0.5 = uncertain cases. The decision threshold (default 0.5) can be moved to trade off precision vs recall.</div>
+  </div>
+
+</div>
+
+<hr>
+
+<!-- Presentation Template -->
+<div style="background:white;border-radius:var(--radius);padding:22px 26px;box-shadow:var(--shadow);margin-bottom:28px;">
+  <h3 style="font-family:Arial,sans-serif;font-size:1rem;font-weight:700;color:var(--maroon);margin-bottom:14px;">📋 Team Presentation Template (2 minutes)</h3>
+  <div class="pres-template">
+    <div class="pres-row"><div class="pres-num">1</div><div class="pres-text"><strong>Who we are:</strong> "Team ___, our mission was ___."</div></div>
+    <div class="pres-row"><div class="pres-num">2</div><div class="pres-text"><strong>What we ran:</strong> Show your plot (screen share or notebook). "Here's what we observed: ___."</div></div>
+    <div class="pres-row"><div class="pres-num">3</div><div class="pres-text"><strong>The mechanism:</strong> "This happens because ___ [use math/intuition from the lectures]."</div></div>
+    <div class="pres-row"><div class="pres-num">4</div><div class="pres-text"><strong>The practical lesson:</strong> "So in a real ML project, this means you should ___ when ___."</div></div>
+  </div>
+</div>
+
+<!-- Instructor Wrap-Up -->
+<div class="part-header" style="background:linear-gradient(135deg,#3b0764,#7c3aed);">
+  <div class="num">✓</div>
+  <div><h2>Instructor Wrap-Up: The Week 3 Mental Model</h2><p>Tie all 10 team insights into one coherent story.</p></div>
+</div>
+<div class="wrapup-grid">
+  <div class="wrapup-item">
+    <div class="wi-label">Teams 1–2 taught us</div>
+    <ul>
+      <li>Learning rate is the most sensitive hyperparameter</li>
+      <li>Loss surface shape = feature scales</li>
+      <li>Always scale → circular surface → GD works</li>
+    </ul>
+  </div>
+  <div class="wrapup-item">
+    <div class="wi-label">Teams 3–4 taught us</div>
+    <ul>
+      <li>Momentum filters gradient noise via EMA</li>
+      <li>Adam = Momentum + RMSProp, best default</li>
+      <li>All optimizers find same minimum; speed differs</li>
+    </ul>
+  </div>
+  <div class="wrapup-item">
+    <div class="wi-label">Teams 5–7 taught us</div>
+    <ul>
+      <li>Regularization = penalty on coefficient size</li>
+      <li>Ridge: shrink all. Lasso: zero out irrelevant.</li>
+      <li>Elastic Net: blend both for correlated features</li>
+    </ul>
+  </div>
+  <div class="wrapup-item">
+    <div class="wi-label">Teams 8–10 taught us</div>
+    <ul>
+      <li>Training loss always falls; val loss has a minimum</li>
+      <li>Early stopping = save best val checkpoint</li>
+      <li>Logistic: C controls boundary complexity</li>
+      <li>Sigmoid converts scores to calibrated probabilities</li>
+    </ul>
+  </div>
+</div>
+
+<div class="info-box amber" style="margin-top:20px;">
+  <strong>The one-sentence summary:</strong> Every technique in Week 3 is a targeted solution to one specific failure mode — scaling fixes loss surface geometry, momentum filters gradient noise, regularization prevents coefficient explosion, early stopping catches the generalization peak, and logistic regression extends all of this to classification.
+</div>
+
+<div style="text-align:center;margin-top:36px;font-family:Arial,sans-serif;font-size:.82rem;color:var(--muted);">
+  ML-II · Week 3 · The University of Chicago MSADS
+</div>
+
+</div>
 </body>
 </html>
